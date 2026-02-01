@@ -1,7 +1,19 @@
+import { useEffect } from 'react'
 import { useFocusStore } from '../../stores/focusStore'
 
 export function WelcomeScreen() {
   const setScreen = useFocusStore((state) => state.setScreen)
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        setScreen('setup')
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [setScreen])
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-8">

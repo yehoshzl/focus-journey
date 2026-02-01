@@ -106,16 +106,6 @@ function PreviewCircle({ minutes }) {
         >
           {formatDuration(minutes)}
         </span>
-        <span
-          style={{
-            fontSize: '0.8rem',
-            marginTop: '0.25rem',
-            letterSpacing: '0.05em',
-            color: colorWithOpacity(colors.light, 0.7),
-          }}
-        >
-          {minutes} min session
-        </span>
       </div>
     </div>
   )

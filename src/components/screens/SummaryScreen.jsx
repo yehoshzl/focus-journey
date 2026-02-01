@@ -1,7 +1,19 @@
+import { useEffect } from 'react'
 import { useFocusStore } from '../../stores/focusStore'
 
 export function SummaryScreen() {
   const { sessionConfig, scene, story, resetSession } = useFocusStore()
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        resetSession()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [resetSession])
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-8">

@@ -48,6 +48,18 @@ The app uses a single Zustand store (`src/stores/focusStore.js`) that manages:
 
 `api/generate-story.js` proxies requests to Claude API to keep the API key server-side. Expects POST with `{ prompt, theme, previousFragments }`.
 
+## Keyboard Shortcuts
+
+| Screen | Key | Action |
+|--------|-----|--------|
+| Welcome | Enter | Start setup |
+| Setup | Enter | Start session |
+| Setup | ↑/↓ | Adjust duration ±1 min |
+| Setup | 0-9 | Type duration directly |
+| Focus | Enter | Pause/Resume timer |
+| Focus | R | Give up session |
+| Summary | Enter | Start new session |
+
 ## Custom Theme Colors
 
 Defined in `src/index.css` using Tailwind v4's `@theme` directive:
@@ -63,16 +75,21 @@ Use as `bg-forest-800`, `text-teal-500`, etc.
 ```
 src/
 ├── components/
-│   ├── ui/        # TimerDisplay, future: Button, Card, ProgressBar
+│   ├── ui/        # CircularTimer, DurationPreviewTimer, TimerDisplay
 │   ├── screens/   # WelcomeScreen, SessionSetupScreen, FocusScreen, SummaryScreen
-│   └── scene/     # SceneCanvas (R3F components)
-├── hooks/         # useTimer (placeholder)
+│   └── scene/     # SceneCanvas, LandscapeReveal, JigsawOverlay, JigsawPiece
+├── hooks/         # useTimer, useJigsawPuzzle
 ├── stores/        # focusStore.js (Zustand)
 ├── lib/
 │   ├── story/     # prompts.js (LLM prompt templates)
 │   ├── scene/     # sprites.js (sprite definitions per theme)
+│   ├── puzzle/    # generator.js (puzzle piece generation)
+│   ├── theme/     # timerColors.js (timer color scheme)
 │   └── timer/     # calculator.js (time utilities)
-└── assets/sprites/{forest,meadow,mountain,coast}/
+└── assets/        # (sprites planned)
+
+public/
+└── assets/        # Landscape images for reveal effect
 
 api/               # Vercel serverless functions
 ```
