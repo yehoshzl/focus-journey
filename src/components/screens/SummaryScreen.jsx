@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useFocusStore } from '../../stores/focusStore'
 import { LANDSCAPE_CONFIG } from '../../lib/scene/landscapeConfig'
 import { LandscapeOverlay } from '../scene/LandscapeOverlay'
@@ -5,6 +6,17 @@ import { LandscapeOverlay } from '../scene/LandscapeOverlay'
 export function SummaryScreen() {
   const { sessionConfig, scene, story, resetSession } = useFocusStore()
   const landscape = LANDSCAPE_CONFIG.landscape_1
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        resetSession()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [resetSession])
 
   return (
     <LandscapeOverlay landscape={landscape} debugMode={true}>

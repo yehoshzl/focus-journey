@@ -1,26 +1,43 @@
+import { useEffect, useRef } from 'react'
 import { useFocusStore } from '../../stores/focusStore'
 import { DurationPreviewTimer } from '../ui/DurationPreviewTimer'
-import { colors, colorWithOpacity } from '../../lib/theme/timerColors'
-
-const DURATIONS = [15, 25, 45, 60]
-const THEMES = ['forest', 'meadow', 'mountain', 'coast']
+import { LandscapeReveal } from '../scene/LandscapeReveal'
 
 export function SessionSetupScreen() {
   const { sessionConfig, setSessionConfig, startSession, setScreen } = useFocusStore()
+  const digitBuffer = useRef('')
+  const digitTimeout = useRef(null)
 
-  const cardStyle = {
-    padding: '24px',
-    borderRadius: '24px',
-    backdropFilter: 'blur(16px)',
-    background: `linear-gradient(145deg, ${colorWithOpacity(colors.darker, 0.9)}, ${colorWithOpacity(colors.darkest, 0.95)})`,
-    boxShadow: `0 8px 32px ${colorWithOpacity(colors.darkest, 0.5)}, inset 0 1px 0 rgba(255,255,255,0.05)`,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '20px',
-    width: '100%',
-    maxWidth: '320px',
-  }
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT') return
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSessionConfig({ duration: Math.min(sessionConfig.duration + 1, 120) })
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSessionConfig({ duration: Math.max(sessionConfig.duration - 1, 1) })
+      } else if (e.key === 'Enter') {
+        e.preventDefault()
+        startSession()
+      } else if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault()
+        clearTimeout(digitTimeout.current)
+        digitBuffer.current += e.key
+        const value = parseInt(digitBuffer.current, 10)
+        if (value >= 1 && value <= 120) {
+          setSessionConfig({ duration: value })
+        }
+        digitTimeout.current = setTimeout(() => {
+          digitBuffer.current = ''
+        }, 1000)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [sessionConfig.duration, setSessionConfig, startSession])
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-8">
@@ -31,74 +48,22 @@ export function SessionSetupScreen() {
         &larr; Back
       </button>
 
-      <h2 className="text-2xl font-semibold text-stone-100 mb-6">
-        Set Up Your Session
-      </h2>
-
-      {/* Timer Preview Card with Duration Selection */}
-      <div style={cardStyle}>
-        <DurationPreviewTimer minutes={sessionConfig.duration} />
-
-        {/* Duration Preset Buttons */}
-        <div className="flex gap-2 w-full">
-          {DURATIONS.map((duration) => (
-            <button
-              key={duration}
-              onClick={() => setSessionConfig({ duration })}
-              style={{
-                flex: 1,
-                padding: '10px 0',
-                borderRadius: '12px',
-                fontWeight: 500,
-                fontSize: '0.9rem',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                backgroundColor: sessionConfig.duration === duration
-                  ? colors.primary
-                  : 'rgba(255,255,255,0.05)',
-                color: sessionConfig.duration === duration
-                  ? colors.text
-                  : colorWithOpacity(colors.text, 0.6),
-                boxShadow: sessionConfig.duration === duration
-                  ? `0 2px 12px ${colorWithOpacity(colors.primary, 0.4)}`
-                  : 'none',
-              }}
-            >
-              {duration}m
-            </button>
-          ))}
+      {/* Landscape Teaser - Upper Right */}
+      <div className="absolute top-4 right-4">
+        <div className="rounded-2xl overflow-hidden shadow-lg" style={{ width: 280, height: 200 }}>
+          <LandscapeReveal imageSrc="/assets/landscape 1.png" progress={0} />
         </div>
       </div>
 
-      {/* Theme Selection */}
-      <div className="mt-6 w-full max-w-md">
-        <label className="block text-stone-300 mb-3">Theme</label>
-        <div className="grid grid-cols-2 gap-3">
-          {THEMES.map((theme) => (
-            <button
-              key={theme}
-              onClick={() => setSessionConfig({ theme })}
-              className={`py-3 rounded-lg capitalize transition-colors ${
-                sessionConfig.theme === theme
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-forest-800 text-stone-300 hover:bg-forest-700'
-              }`}
-            >
-              {theme}
-            </button>
-          ))}
-        </div>
-      </div>
+      <DurationPreviewTimer minutes={sessionConfig.duration} />
 
       {/* Goal Input */}
-      <div className="mt-6 w-full max-w-md">
-        <label className="block text-stone-300 mb-3">What will you focus on?</label>
+      <div className="mt-8 w-full max-w-md">
         <input
           type="text"
           value={sessionConfig.goal}
           onChange={(e) => setSessionConfig({ goal: e.target.value })}
-          placeholder="e.g., Write documentation..."
+          placeholder="What will you focus on?"
           className="w-full px-4 py-3 bg-forest-800 text-stone-100 rounded-lg border border-forest-700 focus:border-teal-500 focus:outline-none"
         />
       </div>

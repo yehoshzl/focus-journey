@@ -52,6 +52,18 @@ The app uses a single Zustand store (`src/stores/focusStore.js`) that manages:
 
 `api/generate-story.js` proxies requests to Claude API to keep the API key server-side. Expects POST with `{ prompt, theme, previousFragments }`.
 
+## Keyboard Shortcuts
+
+| Screen | Key | Action |
+|--------|-----|--------|
+| Welcome | Enter | Start setup |
+| Setup | Enter | Start session |
+| Setup | ↑/↓ | Adjust duration ±1 min |
+| Setup | 0-9 | Type duration directly |
+| Focus | Enter | Pause/Resume timer |
+| Focus | R | Give up session |
+| Summary | Enter | Start new session |
+
 ## Custom Theme Colors
 
 Defined in `src/index.css` using Tailwind v4's `@theme` directive:
@@ -67,16 +79,16 @@ Use as `bg-forest-800`, `text-teal-500`, etc.
 ```
 src/
 ├── components/
-│   ├── ui/        # TimerDisplay, CircularTimer
+│   ├── ui/        # CircularTimer, DurationPreviewTimer, TimerDisplay
 │   ├── screens/   # WelcomeScreen, SessionSetupScreen, FocusScreen, SummaryScreen
-│   └── scene/     # SceneCanvas, LandscapeOverlay, Sprite2D, DebugOverlay
-├── hooks/         # useLandscapeTransform
+│   └── scene/     # SceneCanvas, LandscapeOverlay, LandscapeReveal, JigsawOverlay, JigsawPiece, Sprite2D, DebugOverlay
+├── hooks/         # useLandscapeTransform, useJigsawPuzzle
 ├── stores/        # focusStore.js (Zustand)
 ├── lib/
 │   ├── story/     # prompts.js (LLM prompt templates)
 │   ├── scene/     # landscapeConfig.js, boundaryUtils.js, sprites.js
+│   ├── puzzle/    # generator.js (puzzle piece generation)
 │   └── timer/     # calculator.js (time utilities)
-├── assets/sprites/{forest,meadow,mountain,coast}/
 
 public/assets/     # Landscape and sprite images
 api/               # Vercel serverless functions
