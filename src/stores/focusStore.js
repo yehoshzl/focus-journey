@@ -93,6 +93,11 @@ export const useFocusStore = create((set, get) => ({
     },
   }),
 
+  // Debug: skip to last second of session
+  skipToEnd: () => set((state) => ({
+    timer: { ...state.timer, remaining: 1 }
+  })),
+
   resetSession: () => set({
     currentScreen: 'welcome',
     timer: {

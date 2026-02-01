@@ -9,10 +9,12 @@ Focus Journey is a focus timer app where each session reveals a piece of a proce
 ## Commands
 
 ```bash
-npm run dev      # Start development server (http://localhost:5173)
-npm run build    # Production build
-npm run lint     # Run ESLint
-npm run preview  # Preview production build
+npm run dev          # Start development server (http://localhost:5173)
+npm run build        # Production build
+npm run lint         # Run ESLint
+npm run preview      # Preview production build
+npm run test:e2e     # Run Playwright e2e tests
+npm run test:e2e:ui  # Playwright tests with interactive UI
 ```
 
 ## Tech Stack
@@ -44,6 +46,8 @@ The app uses a single Zustand store (`src/stores/focusStore.js`) that manages:
 
 **3D Scene:** `SceneCanvas` wraps R3F Canvas. Uses OrbitControls (restricted) with an isometric-style camera. Sprites use Billboard components for 2D-on-3D effect.
 
+**2D Landscape Overlay:** `LandscapeOverlay` renders 2D landscapes with positioned sprites. Uses `useLandscapeTransform` hook to convert original image coordinates to screen coordinates, handling object-contain letterboxing. Sprites are placed within a boundary polygon using `boundaryUtils.js`.
+
 ### Serverless API
 
 `api/generate-story.js` proxies requests to Claude API to keep the API key server-side. Expects POST with `{ prompt, theme, previousFragments }`.
@@ -63,18 +67,20 @@ Use as `bg-forest-800`, `text-teal-500`, etc.
 ```
 src/
 ├── components/
-│   ├── ui/        # TimerDisplay, future: Button, Card, ProgressBar
+│   ├── ui/        # TimerDisplay, CircularTimer
 │   ├── screens/   # WelcomeScreen, SessionSetupScreen, FocusScreen, SummaryScreen
-│   └── scene/     # SceneCanvas (R3F components)
-├── hooks/         # useTimer (placeholder)
+│   └── scene/     # SceneCanvas, LandscapeOverlay, Sprite2D, DebugOverlay
+├── hooks/         # useLandscapeTransform
 ├── stores/        # focusStore.js (Zustand)
 ├── lib/
 │   ├── story/     # prompts.js (LLM prompt templates)
-│   ├── scene/     # sprites.js (sprite definitions per theme)
+│   ├── scene/     # landscapeConfig.js, boundaryUtils.js, sprites.js
 │   └── timer/     # calculator.js (time utilities)
-└── assets/sprites/{forest,meadow,mountain,coast}/
+├── assets/sprites/{forest,meadow,mountain,coast}/
 
+public/assets/     # Landscape and sprite images
 api/               # Vercel serverless functions
+e2e/               # Playwright e2e tests
 ```
 
 ## Design Specs
